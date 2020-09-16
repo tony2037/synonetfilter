@@ -139,10 +139,10 @@ static int __init SYNONETFILTER_init(void)
     nfho = (struct nf_hook_ops*)kcalloc(1, sizeof(struct nf_hook_ops), GFP_KERNEL);
     
     /* Initialize netfilter hook */
-    nfho->hook = (nf_hookfn*)hfunc;		/* hook function */
-    nfho->hooknum = NF_INET_PRE_ROUTING;		/* received packets */
-    nfho->pf = PF_INET;			/* IPv4 */
-    nfho->priority = NF_IP_PRI_FIRST;		/* max hook priority */
+    nfho->hook = (nf_hookfn*)hfunc;     /* hook function */
+    nfho->hooknum = NF_INET_LOCAL_IN;    /* received packets */
+    nfho->pf = PF_INET;    /* IPv4 */
+    nfho->priority = NF_IP_PRI_FIRST;    /* max hook priority */
     
     nf_register_net_hook(&init_net, nfho);
 
