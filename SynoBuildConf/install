@@ -1,0 +1,4 @@
+#!/bin/bash
+# Copyright (c) 2000-2019 Synology Inc. All rights reserved.
+
+install -Dm644 synonetfilter.ko ${TmpInstDir}/lib/modules/synonetfilter.ko
