@@ -15,6 +15,7 @@
 #define NET_BIOS_SIZE 4
 #define SMB2_HDR_SIZE 64
 #define SMB2_WRITE_REQUEST_SIZE 48
+#define SMB2_READ_RESPONSE_SIZE 16
 #define TOTAL_HDR_SIZE (IP_HDR_SIZE +\
                         TCP_HDR_SIZE +\
                         NET_BIOS_SIZE +\
