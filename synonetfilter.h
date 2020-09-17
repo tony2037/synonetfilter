@@ -64,4 +64,23 @@ fail:
     return;
 };
 
+#define IP_HDR_SIZE 20
+#define TCP_HDR_SIZE 20
+#define NET_BIOS_SIZE 4
+#define SMB2_HDR_SIZE 64
+#define SMB2_WRITE_REQUEST_SIZE 48
+#define SMB2_READ_RESPONSE_SIZE 16
+
+#define TOTAL_WRITE_REQUEST_HDR_SIZE (IP_HDR_SIZE +\
+                        TCP_HDR_SIZE +\
+                        NET_BIOS_SIZE +\
+                        SMB2_HDR_SIZE +\
+                        SMB2_WRITE_REQUEST_SIZE\
+                        )
+#define TOTAL_READ_RESPONSE_HDR_SIZE (IP_HDR_SIZE +\
+                        TCP_HDR_SIZE +\
+                        NET_BIOS_SIZE +\
+                        SMB2_HDR_SIZE +\
+                        SMB2_READ_RESPONSE_SIZE\
+                        )
 #endif
