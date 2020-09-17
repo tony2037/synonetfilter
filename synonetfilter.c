@@ -109,7 +109,7 @@ static unsigned int hfuncIN(void *priv, struct sk_buff *skb, const struct nf_hoo
     if (iph->protocol == IPPROTO_TCP) {
         tcph = tcp_hdr(skb);
         if (ntohs(tcph->dest) == 445) { // ntohs(x) __be16_to_cpu(x)
-            printk(KERN_NOTICE "%u:%u -> %u:%u", ntohl(iph->saddr), ntohs(tcph->source), ntohl(iph->daddr), ntohs(tcph->dest));
+            printTCPIP(iph, tcph);
 
             if (!getSMB2Header(skb, &smbhdr)) {
                 goto forward;
@@ -148,7 +148,7 @@ static unsigned int hfuncOUT(void *priv, struct sk_buff *skb, const struct nf_ho
     if (iph->protocol == IPPROTO_TCP) {
         tcph = tcp_hdr(skb);
         if (ntohs(tcph->source) == 445) { // ntohs(x) __be16_to_cpu(x)
-            printk(KERN_NOTICE "%u:%u -> %u:%u", ntohl(iph->saddr), ntohs(tcph->source), ntohl(iph->daddr), ntohs(tcph->dest));
+            printTCPIP(iph, tcph);
 
             if (!getSMB2Header(skb, &smbhdr)) {
                 goto forward;

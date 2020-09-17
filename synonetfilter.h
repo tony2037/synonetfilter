@@ -2,6 +2,10 @@
 #ifndef SYNONETFILTER_H
 #define SYNONETFILTER_H
 
+#include <linux/kernel.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
+#include <linux/udp.h>
 #include <linux/types.h>
 
 #define SMB2_PROTOCOL_ID 0xFE534D42
@@ -38,6 +42,26 @@ struct SMB2_HEADER {
     __be32 treeId;
     __be64 sessionId;
     __be64 signatures[2];
+};
+
+static void printTCPIP(struct iphdr *iph, struct tcphdr *tcph)
+{
+    uint8_t *psaddr = NULL;
+    uint8_t *pdaddr = NULL;
+    uint32_t saddr = iph->saddr;
+    uint32_t daddr = iph->daddr;
+    if (iph == NULL || tcph == NULL) {
+        goto fail;
+    }
+    psaddr = (uint8_t *)&saddr;
+    pdaddr = (uint8_t *)&daddr;
+    printk(KERN_NOTICE "%hu.%hu.%hu.%hu:%u -> %hu.%hu.%hu.%hu:%u",
+                       psaddr[0], psaddr[1], psaddr[2], psaddr[3], ntohs(tcph->source),
+                       pdaddr[0], pdaddr[1], pdaddr[2], pdaddr[3], ntohs(tcph->dest)
+            );
+
+fail:
+    return;
 };
 
 #endif
