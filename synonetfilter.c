@@ -9,7 +9,7 @@
 #include <linux/udp.h>
 
 #include "synonetfilter.h"
-#define SMB2_PROTOCOL_ID 4266872130 // FE 53 4D 42
+
 #define IP_HDR_SIZE 20
 #define TCP_HDR_SIZE 20
 #define NET_BIOS_SIZE 4
@@ -115,7 +115,7 @@ static unsigned int hfuncIN(void *priv, struct sk_buff *skb, const struct nf_hoo
                 goto forward;
             }
 
-            if (be16_to_cpu(smbhdr.command) == SMB2_WRITE) {
+            if (IS_WRITE(be16_to_cpu(smbhdr.command)) && IS_REQUEST(be32_to_cpu(smbhdr.flags))) {
                 printk(KERN_NOTICE "write request\n");
 
                 if (filterSMB2Payload(&skb->data[TOTAL_WRITE_REQUEST_HDR_SIZE], skb->len - TOTAL_WRITE_REQUEST_HDR_SIZE)) {
@@ -154,7 +154,7 @@ static unsigned int hfuncOUT(void *priv, struct sk_buff *skb, const struct nf_ho
                 goto forward;
             }
 
-            if (be16_to_cpu(smbhdr.command) == SMB2_READ) {
+            if (IS_READ(be16_to_cpu(smbhdr.command)) && IS_RESPONSE(be32_to_cpu(smbhdr.flags))) {
                 printk(KERN_NOTICE "read response\n");
 
                 if (filterSMB2Payload(&skb->data[TOTAL_READ_RESPONSE_HDR_SIZE], skb->len - TOTAL_READ_RESPONSE_HDR_SIZE)) {
