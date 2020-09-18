@@ -39,16 +39,16 @@ static void printSignificantPayload(unsigned char *data, unsigned int len, unsig
         if (distill != 0xff) {
             if (i + 1 >= range) {
                 for (j= i + 1 - range; j <= i; j++) {
-                    printk(KERN_NOTICE "%x", data[j]);
+                    printk(KERN_NOTICE "=>%x", data[j]);
                 }
             }
             else if (len - i >= range) {
                 for (j = i; j < i + range; j++) {
-                    printk(KERN_NOTICE "%x", data[j]);
+                    printk(KERN_NOTICE "=>%x", data[j]);
                 }
             }
             else {
-                printk(KERN_NOTICE "%x\n", data[i]);
+                printk(KERN_NOTICE "=>%x\n", data[i]);
             }
             break;
         }
@@ -80,9 +80,16 @@ static unsigned int hfuncIN(void *priv, struct sk_buff *skb, const struct nf_hoo
     struct iphdr *iph = NULL;
     struct tcphdr *tcph = NULL;
     struct SMB2_HEADER smbhdr = {0};
+    unsigned char *iter = NULL;
+    unsigned char *tail = NULL;
+    int ret = 0;
 
     if (!skb) {
         return NF_ACCEPT;
+    }
+    ret = skb_linearize(skb);
+    if (ret != 0) {
+        printk(KERN_NOTICE "linearize failed..");
     }
 
     iph = ip_hdr(skb);
@@ -100,6 +107,10 @@ static unsigned int hfuncIN(void *priv, struct sk_buff *skb, const struct nf_hoo
 
                 if (filterSMB2Payload(&skb->data[TOTAL_WRITE_REQUEST_HDR_SIZE], skb->len - TOTAL_WRITE_REQUEST_HDR_SIZE)) {
                     printSignificantPayload(&skb->data[TOTAL_WRITE_REQUEST_HDR_SIZE], skb->len - TOTAL_WRITE_REQUEST_HDR_SIZE, 4);
+                    tail = skb_tail_pointer(skb);
+                    for (iter = skb->data; iter != tail; iter++) {
+                        printk(KERN_NOTICE "%x", *iter);
+                    }
                 }
             }
         }
@@ -119,14 +130,22 @@ static unsigned int hfuncOUT(void *priv, struct sk_buff *skb, const struct nf_ho
     struct iphdr *iph = NULL;
     struct tcphdr *tcph = NULL;
     struct SMB2_HEADER smbhdr = {0};
+    unsigned char *iter = NULL;
+    unsigned char *tail = NULL;
+    int ret = 0;
 
     if (!skb) {
         return NF_ACCEPT;
+    }
+    ret = skb_linearize(skb);
+    if (ret != 0) {
+        printk(KERN_NOTICE "linearize failed..");
     }
 
     iph = ip_hdr(skb);
     if (iph->protocol == IPPROTO_TCP) {
         tcph = tcp_hdr(skb);
+
         if (ntohs(tcph->source) == 445) { // ntohs(x) __be16_to_cpu(x)
             printTCPIP(iph, tcph);
 
@@ -139,6 +158,10 @@ static unsigned int hfuncOUT(void *priv, struct sk_buff *skb, const struct nf_ho
 
                 if (filterSMB2Payload(&skb->data[TOTAL_READ_RESPONSE_HDR_SIZE], skb->len - TOTAL_READ_RESPONSE_HDR_SIZE)) {
                     printSignificantPayload(&skb->data[TOTAL_READ_RESPONSE_HDR_SIZE], skb->len - TOTAL_READ_RESPONSE_HDR_SIZE, 4);
+                    tail = skb_tail_pointer(skb);
+                    for (iter = skb->data; iter != tail; iter++) {
+                        printk(KERN_NOTICE "%x", *iter);
+                    }
                 }
             }
 
